@@ -27,6 +27,11 @@ namespace api.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll() {
+
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             // tham chiếu đến Products nằm trong Application DBContext. ToList() ép dữ liệu trả về thành danh sách
             // var products = await _context.Products.ToListAsync(); // này là lấy ra danh sách sản phẩm
 
@@ -38,8 +43,13 @@ namespace api.Controllers
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById([FromRoute] int id) {
+            
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+            
             var product = await _productRepo.GetByIdAsync(id); 
 
             if(product == null) {
@@ -51,6 +61,11 @@ namespace api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductRequestDto productDto) {
+            
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             var productModel = productDto.ToProductFromCreateDTO();
             // Thay vì dùng này
             // await _context.Products.AddAsync(productModel);
@@ -61,8 +76,13 @@ namespace api.Controllers
         }
 
         [HttpPut]
-        [Route("{id}")]
+        [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductRequestDto updateDto) {
+
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             var productModel = await _productRepo.UpdateAsync(id, updateDto);
 
             if(productModel == null) {
@@ -79,8 +99,13 @@ namespace api.Controllers
         }
 
         [HttpDelete]
-        [Route("HardDelete/{id}")]
+        [Route("HardDelete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id) {
+
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             var productModel = await _productRepo.DeleteAsync(id);
 
             if(productModel == null) {
@@ -102,8 +127,13 @@ namespace api.Controllers
 
 
         [HttpDelete]
-        [Route("SoftDelete/{id}")]
+        [Route("SoftDelete/{id:int}")]
         public async Task<IActionResult> SoftDelete([FromRoute] int id) {
+
+            if(!ModelState.IsValid) {
+                return BadRequest(ModelState);
+            }
+
             var productModel = await _productRepo.SoftDeleteAsync(id);
 
             if(productModel == null) {

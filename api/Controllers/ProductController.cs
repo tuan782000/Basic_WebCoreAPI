@@ -7,6 +7,7 @@ using api.Dtos.Product;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -22,16 +23,16 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll() {
+        public async Task<IActionResult> GetAll() {
             // tham chiếu đến Products nằm trong Application DBContext. ToList() ép dữ liệu trả về thành danh sách
-            var products = _context.Products.ToList()
-                .Select(s => s.ToProductDto());  // select là delegate
+            var products = await _context.Products.ToListAsync(); // này là lấy ra danh sách sản phẩm
+            var productDto = products.Select(s => s.ToProductDto());  // select là delegate
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetById([FromRoute] int id) {
-            var product = _context.Products.Find(id); // Find này là phương thức có sẵn
+        public async Task<IActionResult> GetById([FromRoute] int id) {
+            var product = await _context.Products.FindAsync(id); // Find này là phương thức có sẵn
 
             if(product == null) {
                 return NotFound();
@@ -41,17 +42,17 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] CreateProductRequestDto productDto) {
+        public async Task<IActionResult> Create([FromBody] CreateProductRequestDto productDto) {
             var productModel = productDto.ToProductFromCreateDTO();
-            _context.Products.Add(productModel);
-            _context.SaveChanges();
+            await _context.Products.AddAsync(productModel);
+            await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetById), new {id = productModel.Id}, productModel.ToProductDto());
         }
 
         [HttpPut]
         [Route("{id}")]
-        public IActionResult Update([FromRoute] int id, [FromBody] UpdateProductRequestDto updateDto) {
-            var productModel = _context.Products.FirstOrDefault(x => x.Id == id);
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductRequestDto updateDto) {
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if(productModel == null) {
                 return NotFound();
@@ -62,28 +63,37 @@ namespace api.Controllers
             productModel.Thumbnail = updateDto.Thumbnail;
             productModel.Description = updateDto.Description;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok(productModel.ToProductDto());
         }
 
         [HttpDelete]
         [Route("HardDelete/{id}")]
-        public IActionResult Delete([FromRoute] int id) {
-            var productModel = _context.Products.FirstOrDefault(x => x.Id == id);
+        public async Task<IActionResult> Delete([FromRoute] int id) {
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if(productModel == null) {
                 return NotFound();
             }
 
+            /*
+            The reason why Delete() does not allow await is:
+            - It does not involve any immediate database interaction when called, merely a state change in memory
+            - does not involve waiting and is a quick in-memory operation, making it asynchronous would not provide any benefits and could even lead to less efficient resource utilization.
+
+            Thank you for this amazing content, + leaving a question at the end is a good idea it make us dig more into .NET tricks, keep up the good work
+            */
             _context.Products.Remove(productModel);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
 
+
+
         [HttpDelete]
         [Route("SoftDelete/{id}")]
-        public IActionResult SoftDelete([FromRoute] int id) {
-            var productModel = _context.Products.FirstOrDefault(x => x.Id == id);
+        public async Task<IActionResult> SoftDelete([FromRoute] int id) {
+            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
             if(productModel == null) {
                 return NotFound();
@@ -91,7 +101,7 @@ namespace api.Controllers
 
             // _context.Products.Remove(productModel);
             productModel.Active = false; // xóa mềm - cập nhật sản phẩm thành false
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return NoContent();
         }
     }

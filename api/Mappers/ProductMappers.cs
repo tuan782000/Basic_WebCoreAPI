@@ -16,7 +16,10 @@ namespace api.Mappers
                 Price = productModel.Price,
                 Thumbnail = productModel.Thumbnail,
                 Description = productModel.Description,
-                Active = productModel.Active
+                Active = productModel.Active,
+
+                // Bổ dung List Comment
+                Comments = productModel.Comments.Select(c => c.ToCommentDto()).ToList()
             };
         }
 

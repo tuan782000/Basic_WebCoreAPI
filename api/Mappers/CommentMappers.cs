@@ -18,5 +18,19 @@ namespace api.Mappers
                 ProductId = commentModel.ProductId
             };
         }
+
+        public static Comment ToCommentFromCreate(this CreateCommentDto commentDto, int productId) {
+            return new Comment {
+                Title = commentDto.Title,
+                Content = commentDto.Content,
+                ProductId = productId
+            };
+        }
+        public static Comment ToCommentFromUpdate(this UpdateCommentRequestDto commentDto) {
+            return new Comment {
+                Title = commentDto.Title,
+                Content = commentDto.Content,
+            };
+        }
     }
 }

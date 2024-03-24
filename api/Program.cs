@@ -12,6 +12,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// cài 2 thư viện newtonsoft.json và MS newtonsoft.json
+
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
+
 // đoạn này là kết nối giữa Data - ApplicationDBContext với appsettings.json
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
 {

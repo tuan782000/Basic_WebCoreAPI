@@ -15,5 +15,8 @@ namespace api.Interfaces
         Task<Product?>UpdateAsync(int id, UpdateProductRequestDto productDto);
         Task<Product?> DeleteAsync(int id);
         Task<Product?> SoftDeleteAsync(int id);
+
+        // Kiểm tra product có tồn tại hay chưa
+        Task<bool> ProductExists(int id);
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Product;
+using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -17,22 +18,29 @@ namespace api.Controllers
     {
          // đọc dữ liệu từ trong databse
         private readonly ApplicationDBContext _context;
-        public ProductController(ApplicationDBContext context)
+        private readonly IProductRepository _productRepo;
+        public ProductController(ApplicationDBContext context, IProductRepository productRepo)
         {
             _context = context;
+            _productRepo = productRepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll() {
             // tham chiếu đến Products nằm trong Application DBContext. ToList() ép dữ liệu trả về thành danh sách
-            var products = await _context.Products.ToListAsync(); // này là lấy ra danh sách sản phẩm
+            // var products = await _context.Products.ToListAsync(); // này là lấy ra danh sách sản phẩm
+
+            // Thay vì phải dựa vào  _context chọc vào Products lấy ra hàm ToListAsync. Thì giờ đây có thể lấu thông qua Repository - ProductRepository của IProductRepository
+
+            var products = await _productRepo.GetAllAsync(); // mọi xử lý đều được viết trong hàm GetAllAsync
+
             var productDto = products.Select(s => s.ToProductDto());  // select là delegate
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById([FromRoute] int id) {
-            var product = await _context.Products.FindAsync(id); // Find này là phương thức có sẵn
+            var product = await _productRepo.GetByIdAsync(id); 
 
             if(product == null) {
                 return NotFound();
@@ -44,15 +52,18 @@ namespace api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductRequestDto productDto) {
             var productModel = productDto.ToProductFromCreateDTO();
-            await _context.Products.AddAsync(productModel);
-            await _context.SaveChangesAsync();
+            // Thay vì dùng này
+            // await _context.Products.AddAsync(productModel);
+            // await _context.SaveChangesAsync();
+            // đã viết nó vào trong ProductRepository và chỉ việc tham chiếu đến IProductRepository để lấy "CreateAsync" ra dùng
+            await _productRepo.CreateAsync(productModel);
             return CreatedAtAction(nameof(GetById), new {id = productModel.Id}, productModel.ToProductDto());
         }
 
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateProductRequestDto updateDto) {
-            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            var productModel = await _productRepo.UpdateAsync(id, updateDto);
 
             if(productModel == null) {
                 return NotFound();
@@ -70,7 +81,7 @@ namespace api.Controllers
         [HttpDelete]
         [Route("HardDelete/{id}")]
         public async Task<IActionResult> Delete([FromRoute] int id) {
-            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            var productModel = await _productRepo.DeleteAsync(id);
 
             if(productModel == null) {
                 return NotFound();
@@ -93,7 +104,7 @@ namespace api.Controllers
         [HttpDelete]
         [Route("SoftDelete/{id}")]
         public async Task<IActionResult> SoftDelete([FromRoute] int id) {
-            var productModel = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
+            var productModel = await _productRepo.SoftDeleteAsync(id);
 
             if(productModel == null) {
                 return NotFound();

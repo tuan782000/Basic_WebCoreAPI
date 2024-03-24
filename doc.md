@@ -78,3 +78,61 @@ chuyển đổi dữ liệu thành đối tượng Model - chuyển đổi dạn
 ánh xạ dữ liệu Model và Dtos với nhau thì phải thông qua mappers
 
 firstOrDefault: là một phương thức LINQ trong C# được sử dụng để trả về phần tử đầu tiên hoặc một phần tử thỏa mãn một điều kiện từ một tập hợp (collection).
+
+# Pattern + DI
+
+Code trong controller hiện tại trùng nhiều
+
+Ví dụ:
+
+Get:
+
+```c#
+_context.Product.FirstOrDefault(i)
+```
+
+GetALL:
+
+```c#
+_context.Product.FirstOrDefault(i)
+```
+
+Update:
+
+```c#
+_context.Product.FirstOrDefault(i)
+```
+
+Delete:
+
+```c#
+_context.Product.FirstOrDefault(i)
+```
+
+Trùng lặp khá nhiều
+
+Giải pháp là tạo ra 1 Repository, sau đó viết 1 hàm chuyên để xử lý vấn đề này. Xong đem qua controller và sử dụng.
+
+Tái sử dụng code được nhiều lần
+
+Repository
+
+```C#
+FindProduct(int i) {
+    _context.Product.FirstOrDefault(i).ToList();
+}
+```
+
+Controllers
+
+```c#
+// Get
+_repo.FindProduct()
+// GetAll
+_repo.FindProduct()
+// Update
+_repo.FindProduct()
+// delete
+_repo.FindProduct()
+
+```

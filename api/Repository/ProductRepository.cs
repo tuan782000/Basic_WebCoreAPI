@@ -88,7 +88,14 @@ namespace api.Repository
                 }
             }
 
-            return await products.ToListAsync();
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            // PageNumber = 1 - trang đầu tiên - PageSize: 2 mỗi trang chứa 2 phần tử
+            // 1 - 1 * 2 = 0 skip(0) take(2)
+            // 2 - 1 * 2 = 2 skip(2) take(2)
+            // 3 - 1 * 2 = 4 skip(4) take(2)
+
+
+            return await products.Skip(skipNumber).Take(query.PageSize).ToListAsync();
         }
 
         public async Task<Product?> GetByIdAsync(int id)

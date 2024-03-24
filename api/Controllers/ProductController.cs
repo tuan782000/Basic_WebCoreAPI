@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Product;
+using api.Helpers;
 using api.Interfaces;
 using api.Mappers;
 using api.Models;
@@ -26,7 +27,7 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() {
+        public async Task<IActionResult> GetAll([FromQuery] QueryObject query) {
 
             if(!ModelState.IsValid) {
                 return BadRequest(ModelState);
@@ -37,7 +38,7 @@ namespace api.Controllers
 
             // Thay vì phải dựa vào  _context chọc vào Products lấy ra hàm ToListAsync. Thì giờ đây có thể lấu thông qua Repository - ProductRepository của IProductRepository
 
-            var products = await _productRepo.GetAllAsync(); // mọi xử lý đều được viết trong hàm GetAllAsync
+            var products = await _productRepo.GetAllAsync(query); // mọi xử lý đều được viết trong hàm GetAllAsync
 
             var productDto = products.Select(s => s.ToProductDto());  // select là delegate
             return Ok(products);

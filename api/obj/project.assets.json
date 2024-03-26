@@ -4612,11 +4612,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\DELL\\Desktop\\C#\\Aptech\\project\\api\\api.csproj",
+      "projectUniqueName": "C:\\Users\\DELL\\Desktop\\CSharp\\Aptech\\project\\api\\api.csproj",
       "projectName": "api",
-      "projectPath": "C:\\Users\\DELL\\Desktop\\C#\\Aptech\\project\\api\\api.csproj",
+      "projectPath": "C:\\Users\\DELL\\Desktop\\CSharp\\Aptech\\project\\api\\api.csproj",
       "packagesPath": "C:\\Users\\DELL\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\DELL\\Desktop\\C#\\Aptech\\project\\api\\obj\\",
+      "outputPath": "C:\\Users\\DELL\\Desktop\\CSharp\\Aptech\\project\\api\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\DELL\\AppData\\Roaming\\NuGet\\NuGet.Config",

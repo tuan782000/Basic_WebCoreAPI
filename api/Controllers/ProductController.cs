@@ -102,7 +102,7 @@ namespace api.Controllers
         }
 
         [HttpDelete]
-        [Route("HardDelete/{id:int}")]
+        [Route("harddelete/{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id) {
 
             if(!ModelState.IsValid) {
@@ -122,15 +122,15 @@ namespace api.Controllers
 
             Thank you for this amazing content, + leaving a question at the end is a good idea it make us dig more into .NET tricks, keep up the good work
             */
-            _context.Products.Remove(productModel);
-            await _context.SaveChangesAsync();
+            // _context.Products.Remove(productModel);
+            // await _context.SaveChangesAsync();
             return NoContent();
         }
 
 
 
         [HttpDelete]
-        [Route("SoftDelete/{id:int}")]
+        [Route("softdelete/{id:int}")]
         public async Task<IActionResult> SoftDelete([FromRoute] int id) {
 
             if(!ModelState.IsValid) {
